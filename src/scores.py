@@ -1,5 +1,5 @@
 """
-utils/scores.py — Per-sample score accumulators.
+src/scores.py — Per-sample score accumulators.
 
 Three signals, all computed during a single warm-up training run:
 
