@@ -1,13 +1,9 @@
 """
-train_warmup.py — Phase 1: warm-up training run.
-
 Trains a backbone on full ImageNet and, after every epoch, runs a second
 no-grad scoring pass that accumulates:
 
   age_scores.npy       — per-sample correct-prediction count  [0, E]
-  forgetting_scores.npy— per-sample forgetting event count    [0, E-1]
-  el2n_scores.npy      — per-sample mean EL2N (early epochs only)
-
+  
 All three signals are saved incrementally so the run can be resumed if
 interrupted.
 
@@ -39,9 +35,6 @@ from src.data import get_dataloader
 from tqdm import tqdm
 
 # ── Main ──────────────────────────────────────────────────────────────────────
-
-
-
 def main():
     global args, best_prec1, config
     parser = argparse.ArgumentParser()
@@ -74,7 +67,7 @@ def main():
     print(f"Device: {device}")
 
     # ── Data ──────────────────────────────────────────────────────────────────
-    # Data loading code
+    # ImageNet
     args.distributed = False
 
     traindir = os.path.join(args.data, 'train')
@@ -213,9 +206,7 @@ def main():
                     indices = indices.detach().cpu().numpy()
                     correct = correct.detach().cpu().numpy()
                     age_acc.update(indices, correct)
-                    # fgt_acc.update(indices, correct)
-                    # el2n_acc.update(indices, logits.cpu().numpy(), labels.cpu().numpy(), epoch)
-
+                  
                 # Save scores after every epoch (safe to interrupt)
                 age_acc.save(os.path.join(out_dir, f"age_scores_{epoch:03d}.npy"))
                 print(f"Scoring done in {time.time()-sc_t0:.1f}s")
