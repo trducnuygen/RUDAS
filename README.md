@@ -38,7 +38,7 @@ Modify the script accordingly for Places365 or any other datasets.
 
 
 
-**Phase 3 — Train and evaluate classifiers on rescaled subsets of ImageNet and Places365:**
+**Phase 3 — Train classifiers on rescaled subsets of ImageNet and Places365:**
 
 * For training CNN-backbones on rescaled sub-datasets of ImageNet
 
