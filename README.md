@@ -88,3 +88,12 @@ If you use any materials from this repository, please cite the following relevan
   url     = {https://doi.org/10.1016/j.patrec.2024.07.001},
 }
 ```
+
+```bibtex
+@unpublished{amclNguyen26,
+  author = {Nguyen, Trung Duc and Nguyen, Thanh Tuan and Borgi, Mohamed Anouar and Nguyen, Thanh Phuong},
+  title  = {Rescaling Huge Datasets based on Age Score},
+  note   = {Manuscript submitted for publication to \textit{Machine Learning} (ACML Journal Track)},
+  year   = {2026},
+}
+```
