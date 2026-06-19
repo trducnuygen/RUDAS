@@ -1,17 +1,3 @@
-"""
-Trains a backbone on full ImageNet and accumulates per-sample age scores
-during the training forward pass (no separate scoring pass).
-
-Each sample is identified by its stable global index (assigned by
-IndexedConcatDataset), so shuffling in the DataLoader does not affect
-score attribution.
-
-  age_scores.npy  — per-sample correct-prediction count  [0, E]
-
-Scores are saved incrementally after every epoch so the run can be
-resumed if interrupted.
-"""
-
 import math
 import os
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
@@ -29,12 +15,10 @@ import torchvision.transforms as transforms
 
 import getModel as gM
 import writeLogAcc as wA
-from src.scores import AgeAccumulator, IndexedConcatDataset
+from src.scores import AgeScoring, IndexedConcatDataset
 from src.data import get_dataloader
 from tqdm import tqdm
 
-
-# ── Main ──────────────────────────────────────────────────────────────────────
 def main():
     global args, best_prec1
     parser = argparse.ArgumentParser()
@@ -67,9 +51,8 @@ def main():
 
     args.distributed = False
     traindir = os.path.join(args.data, 'train')
-    valdir   = os.path.join(args.data, 'val')
+    valdir = os.path.join(args.data, 'val')
 
-    # ── Data ──────────────────────────────────────────────────────────────────
     train_transform = transforms.Compose([
         transforms.RandomResizedCrop(224),
         transforms.RandomHorizontalFlip(),
@@ -80,13 +63,12 @@ def main():
     _, train_set = get_dataloader(traindir, args.batch_size, shuffle=False,
                                   num_workers=args.num_workers,
                                   return_dataset=True, transform=train_transform)
-    _, val_set   = get_dataloader(valdir,   args.batch_size, shuffle=False,
+    _, val_set = get_dataloader(valdir,   args.batch_size, shuffle=False,
                                   num_workers=args.num_workers,
                                   return_dataset=True, transform=train_transform)
 
     raw_concat = torch.utils.data.ConcatDataset([train_set, val_set])
 
-    # Wrap so each batch also yields the global sample index.
     indexed_dataset = IndexedConcatDataset(raw_concat)
 
     full_loader = torch.utils.data.DataLoader(
@@ -97,11 +79,9 @@ def main():
         pin_memory=True,
     )
 
-    N         = len(raw_concat)
+    N = len(raw_concat)
     n_classes = 1000
     print(f"Training set size: {N}")
-
-    # ── Model ─────────────────────────────────────────────────────────────────
     args.arch = "mobilenetv3_Age_ImgNet"
     print("=> creating model '{}'".format(args.arch))
     model = gM.get_model(args.arch, num_class=n_classes)
@@ -119,9 +99,8 @@ def main():
     directory = "checkpoints/%s/" % args.arch
     os.makedirs(directory, exist_ok=True)
 
-    age_acc = AgeAccumulator(N)
+    age_acc = AgeScoring(N)
 
-    # ── Resume ────────────────────────────────────────────────────────────────
     if args.resume:
         if os.path.isfile(args.resume):
             print("=> loading checkpoint '{}'".format(args.resume))
@@ -138,13 +117,12 @@ def main():
         resume_score_path = os.path.join(
             out_dir, f"age_scores_{args.start_epoch - 1:03d}.npy")
         if os.path.isfile(resume_score_path):
-            age_acc = AgeAccumulator.load(resume_score_path, N)
+            age_acc = AgeScoring.load(resume_score_path, N)
             print(f"=> resumed age scores from '{resume_score_path}'")
 
     cudnn.benchmark = True
 
-    # ── Training loop ─────────────────────────────────────────────────────────
-    Loss_plot        = {}
+    Loss_plot = {}
     train_prec1_plot = {}
     train_prec5_plot = {}
     epoch_max  = None
@@ -157,7 +135,7 @@ def main():
             full_loader, model, criterion, optimizer, epoch, age_acc)
         age_acc.epoch_end() 
 
-        Loss_plot[epoch]        = loss_temp
+        Loss_plot[epoch] = loss_temp
         train_prec1_plot[epoch] = train_prec1_temp
         train_prec5_plot[epoch] = train_prec5_temp
         prec1 = train_prec1_temp
@@ -166,12 +144,11 @@ def main():
 
         score_path = os.path.join(out_dir, f"age_scores_{epoch:03d}.npy")
         age_acc.save(score_path)
-        print(f"  Age scores saved → {score_path}")
+        print(f"Age scores saved to {score_path}")
 
         adjust_learning_rate(optimizer, epoch,
                              warmup_epochs=5, total_epochs=args.epochs)
 
-        # ── Checkpoint ────────────────────────────────────────────────────────
         is_best = prec1 > best_prec1
         if is_best:
             epoch_max = epoch
@@ -198,17 +175,16 @@ def main():
         print("-" * 80)
 
     print("\nAge scoring run complete.")
-    print(f"  Scores saved to: {out_dir}/")
-    print(f"  age_scores_{epoch:03d}.npy  shape={age_acc.get().shape}")
+    print(f"Scores saved to: {out_dir}/")
+    print(f"age_scores_{epoch:03d}.npy with shape={age_acc.get().shape}")
 
 
-# ── Train (+ score in the same pass) ──────────────────────────────────────────
 def train(train_loader, model, criterion, optimizer, epoch, age_acc):
     batch_time = AverageMeter()
-    data_time  = AverageMeter()
-    losses     = AverageMeter()
-    top1       = AverageMeter()
-    top5       = AverageMeter()
+    data_time = AverageMeter()
+    losses = AverageMeter()
+    top1 = AverageMeter()
+    top5 = AverageMeter()
 
     model.train()
     end = time.time()
@@ -216,14 +192,11 @@ def train(train_loader, model, criterion, optimizer, epoch, age_acc):
     for i, (inputs, targets, indices) in enumerate(train_loader):
         data_time.update(time.time() - end)
 
-        inputs  = inputs.cuda(args.gpu, non_blocking=True)
+        inputs = inputs.cuda(args.gpu, non_blocking=True)
         targets = targets.cuda(args.gpu, non_blocking=True)
-
-        # Forward
         outputs = model(inputs)
-        loss    = criterion(outputs, targets)
+        loss = criterion(outputs, targets)
 
-        # Metrics
         prec1, prec5 = accuracy(outputs, targets, topk=(1, 5))
         losses.update(loss.item(), inputs.size(0))
         top1.update(prec1[0], inputs.size(0))
@@ -234,7 +207,6 @@ def train(train_loader, model, criterion, optimizer, epoch, age_acc):
             correct = predicted.eq(targets).detach().cpu().numpy()
         age_acc.update(indices.numpy(), correct)
 
-        # Backward
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
@@ -258,11 +230,11 @@ def train(train_loader, model, criterion, optimizer, epoch, age_acc):
 def accuracy(output, target, topk=(1,)):
     """Computes the precision@k for the specified values of k."""
     with torch.no_grad():
-        maxk       = max(topk)
+        maxk = max(topk)
         batch_size = target.size(0)
-        _, pred    = output.topk(maxk, 1, True, True)
-        pred       = pred.t()
-        correct    = pred.eq(target.view(1, -1).expand_as(pred))
+        _, pred = output.topk(maxk, 1, True, True)
+        pred = pred.t()
+        correct = pred.eq(target.view(1, -1).expand_as(pred))
         res = []
         for k in topk:
             correct_k = correct[:k].contiguous().view(-1).float().sum(0, keepdim=True)
@@ -286,10 +258,10 @@ class AverageMeter:
         self.val = self.avg = self.sum = self.count = 0
 
     def update(self, val, n=1):
-        self.val   = val
-        self.sum  += val * n
+        self.val = val
+        self.sum += val * n
         self.count += n
-        self.avg   = self.sum / self.count
+        self.avg = self.sum / self.count
 
 
 def adjust_learning_rate(optimizer, epoch, warmup_epochs, total_epochs):

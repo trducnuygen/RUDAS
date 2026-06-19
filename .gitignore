@@ -6,6 +6,10 @@ __pycache__/
 # C extensions
 *.so
 
+# csv files
+Rescaled_ImageNet/age_table_imgnet.csv
+Rescaled_Places365/age_table_places365.csv
+
 # Distribution / packaging
 .Python
 build/

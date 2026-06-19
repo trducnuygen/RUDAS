@@ -16,7 +16,7 @@ class AgePruner():
     def V1_prune(self, r, q=0.1):
         V1_indices = []
         n_total = len(self.ages)
-        max_hard = max(1, int(n_total * q))  # global 10% cap across all classes
+        # max_hard = max(1, int(n_total * q)) 
 
         for lbl in self.unique_labels:
             cls_mask = self.labels == lbl
@@ -28,33 +28,26 @@ class AgePruner():
 
             n_hard_target = max(1, int(len(cls_ages) * q))
 
-            # Sort by age ASC, then by index for determinism (stable)
-            sort_order = np.lexsort((cls_indices, cls_ages))  # primary: age, tiebreak: index
+            sort_order = np.lexsort((cls_indices, cls_ages)) 
             sorted_ages = cls_ages[sort_order]
             sorted_indices = cls_indices[sort_order]
-
-            # Take exactly n_hard_target samples — stop before pulling in
-            # extra tie samples that would push us over the boundary
             cutoff_age = sorted_ages[n_hard_target - 1]
 
             hard_mask = sorted_ages < cutoff_age
             hard_indices = sorted_indices[hard_mask]
 
-            # Fill up to n_hard_target from tie-age samples (deterministic: lowest index first)
             remaining = n_hard_target - len(hard_indices)
             tie_mask = sorted_ages == cutoff_age
-            tie_indices = sorted_indices[tie_mask]  # already sorted by index via lexsort
+            tie_indices = sorted_indices[tie_mask] 
             accepted_ties = tie_indices[:remaining]
-            overflow_ties = tie_indices[remaining:]
+            # overflow_ties = tie_indices[remaining:]
 
             hard_indices = np.concatenate([hard_indices, accepted_ties])
             self.hard.extend(hard_indices.tolist())
-            # Overflow ties go to moderate (handled in V3 by exclusion logic)
-            # — they are simply not added to self.hard, so mask in V3 won't exclude them
 
             num_select = max(1, int(len(hard_indices) * r))
             num_select = min(num_select, len(hard_indices))
-            selected = hard_indices[:num_select]  # already sorted by age asc
+            selected = hard_indices[:num_select]  
 
             V1_indices.extend(selected.tolist())
 
@@ -73,7 +66,6 @@ class AgePruner():
 
             n_easy_target = max(1, int(len(cls_ages) * q))
 
-            # Sort by age DESC, tiebreak by index ASC for determinism
             sort_order = np.lexsort((cls_indices, -cls_ages))
             sorted_ages = cls_ages[sort_order]
             sorted_indices = cls_indices[sort_order]
@@ -91,7 +83,6 @@ class AgePruner():
             easy_indices = np.concatenate([easy_indices, accepted_ties])
             self.easy.extend(easy_indices.tolist())
 
-            # Random but seeded — reproducible across runs
             n_sample = max(1, int(len(easy_indices) * r))
             n_sample = min(n_sample, len(easy_indices))
             rng = np.random.default_rng(seed)
@@ -106,7 +97,6 @@ class AgePruner():
         V2_indices = self.easy
         V1_indices = self.hard
         
-        # remove the V1 and V2 samples from consideration
         mask = np.ones(len(self.ages), dtype=bool)
         if V1_indices is not None:
             mask[V1_indices] = False
@@ -116,7 +106,6 @@ class AgePruner():
         ages = self.ages[mask]
         labels = self.labels[mask]
         global_indices = np.where(mask)[0]
-        # print total number of samples in V3
         # print(f'number of samples in V3: {len(ages)}')
 
         for lbl in self.unique_labels:
@@ -124,8 +113,7 @@ class AgePruner():
             cls_ages = ages[cls_mask]
             cls_indices = global_indices[cls_mask]
 
- #           print(f'class {lbl} has {len(cls_ages)} in V3')
-
+#           print(f'class {lbl} has {len(cls_ages)} in V3')
             self.moderate.extend(cls_indices.tolist()) # for analysis
 
             if len(cls_ages) == 0: continue 
@@ -133,33 +121,24 @@ class AgePruner():
                 V3_indices.extend(cls_indices) # take all if not enough for binning
                 continue
 
-            # sort samples by age
             sorted_order = np.argsort(cls_ages)
-
-            # split sorted positions into bins
             rank_bins = np.array_split(sorted_order, n_bins)
 
             bin_counts = [len(b) for b in rank_bins]
 #            print(f'class {lbl} bin counts: {bin_counts}')
 
             for b, rank_idx in enumerate(rank_bins):
-
-                # rank_idx are positions inside cls_ages
                 bin_indices = cls_indices[rank_idx]
-
                 if len(bin_indices) == 0:
                     continue
 
                 n_sample = max(1, int(len(bin_indices) * r))
                 n_sample = min(n_sample, len(bin_indices))
-
                 selected = np.random.choice(
                     bin_indices,
                     size=n_sample,
                     replace=False
                 )
-                # print(f'class {lbl} bin {b} has {len(bin_indices)} samples, selected {len(selected)} samples.')
-
                 V3_indices.extend(selected.tolist())
 
         return V3_indices

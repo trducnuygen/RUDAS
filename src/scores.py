@@ -1,50 +1,43 @@
-"""
-src/scores.py — Per-sample score accumulators.
-
-Three signals, all computed during a single warm-up training run:
-
-  AgeAccumulator
-    age[i] += 1 each epoch that sample i is predicted correctly.
-    Range: [0, E].  High = easy.
-
-All accumulators operate on numpy arrays sized (N,) where N = len(train set).
-They are updated in-place after each scoring pass and saved to disk.
-"""
-
-import time
-
 import numpy as np
 import torch
-import torch.nn.functional as F
-from typing import Optional
-from tqdm import tqdm
+from torch.utils.data import Dataset
 
-class AgeAccumulator:
-    """
-    Counts the number of epochs each sample is correctly predicted.
-    """
 
-    def __init__(self, n_samples):
+class IndexedConcatDataset(Dataset):
+    def __init__(self, dataset):
+        self.dataset = dataset
+
+    def __len__(self):
+        return len(self.dataset)
+
+    def __getitem__(self, idx):
+        img, label = self.dataset[idx]
+        return img, label, idx
+
+
+class AgeScoring:
+    def __init__(self, n_samples: int):
         self.n_samples = n_samples
         self.age = np.zeros(n_samples, dtype=np.int32)
+        self._epoch_correct = np.zeros(n_samples, dtype=np.int32)
 
     def update(self, indices, correct):
-        """
-        indices : sample indices in the dataset
-        correct : True if predicted correctly this epoch
-        """
-        self.age[indices] += correct.astype(np.int32)
+        idx = np.asarray(indices, dtype=np.int64)
+        cor = np.asarray(correct, dtype=np.int32)
+        self._epoch_correct[idx] += cor
+
+    def epoch_end(self):
+        self.age += self._epoch_correct
+        self._epoch_correct[:] = 0
 
     def get(self):
         return self.age.copy()
 
-    def save(self, path):
+    def save(self, path: str):
         np.save(path, self.age)
 
     @classmethod
-    def load(cls, path, n_samples):
+    def load(cls, path: str, n_samples: int):
         obj = cls(n_samples)
         obj.age = np.load(path)
         return obj
-
-

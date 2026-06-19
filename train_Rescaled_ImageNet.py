@@ -93,13 +93,13 @@ def main():
 #        'efficientnetv2', # variant s
         ]    
     #arr_models = ['vgg16']#--lr 0.01, -b=32
-    path_temp = args.data # 'reduce_result'
+    path_temp = args.data # 'path/to/Rescaled_ImageNet'
     for name_model in arr_models:        
         args.arch = name_model
-        arr_rescaled_set = ["r0.5_100"]
+        arr_rescaled_set = ["r0.1", "r0.2", "r0.3", "r0.4", "r0.5"]
         for rescaled_set in arr_rescaled_set:
             # get name of dataset
-            model_name_dataset = args.arch + '_' + 'Age_' + str(rescaled_set)
+            model_name_dataset = args.arch + '_' + 'Age_imgnet_' + str(rescaled_set)
             args.data = path_temp + '/' + str(rescaled_set)
             filenameLOG = "./checkpoints/%s/"%(model_name_dataset) + '/' + model_name_dataset + '.txt'        
             print("=> creating model '{}'".format(model_name_dataset))            
