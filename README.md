@@ -25,6 +25,8 @@ $ python age_script.py --data /path/to/ImageNet --epochs 100 --output_dir age_sc
 
 Age scores (`age_scores_NNN.npy`) are saved incrementally after each epoch to `age_scores/age_scoring/`. The run can be safely interrupted and resumed via `--resume`.
 
+Age scores of ImageNet and Places365 that we have measured can be accessed via this [link](https://drive.google.com/drive/folders/1SB_8EWoMEvM6JjcCPpS6lRnMNpRy18ZO?usp=sharing)
+
 **Phase 2 — Train and evaluate classifiers on rescaled subsets of ImageNet:**
 
 ```
