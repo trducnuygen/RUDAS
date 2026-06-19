@@ -27,19 +27,29 @@ Age scores (`age_scores_NNN.npy`) are saved incrementally after each epoch to `a
 
 Age scores of ImageNet and Places365 that we have measured can be accessed via this [link](https://drive.google.com/drive/folders/1SB_8EWoMEvM6JjcCPpS6lRnMNpRy18ZO?usp=sharing).
 
-**Phase 2 — Train and evaluate classifiers on rescaled subsets of ImageNet:**
+**Phase 2 — Prune datasets from the age table:**
+From the `age_scores_NNN.npy`, run `age_table.py` to produce the csv file with indices as the relative path to each sample of the original dataset. This csv file is then used for running the pruning script. For example, to prune ImageNet with preservation rate `r=0.1`, each easy / hard collection accounts for `b=1`, we run the following:
 
 ```
-$ python classifiers_imgnet.py --data ./Rescaled_ImageNet --epochs 100
+$ python pruning_age.py -d path/to/ImageNet --age path/to/age_table.csv -re 0.1 -rm 0.1 -rh 0.1 -q 0.1 
 ```
 
-**Evaluate a saved checkpoint without retraining:**
+Modify the script accordingly for Places365 or any other datasets.
+
+
+**Phase 3 — Train and evaluate classifiers on rescaled subsets of ImageNet and Places365:**
+
+* For training CNN-backbones on rescaled sub-datasets of ImageNet
 
 ```
-$ python classifiers_imgnet.py --data ./Rescaled_ImageNet --evaluate
+$ python train_Rescaled_ImageNet --data path/to/Rescaled_ImageNet 
 ```
 
-Note: a `classifiers_places.py` script for Places365 is planned (see roadmap).
+* For training CNN-backbones on rescaled sub-datasets of Places365
+
+```
+$ python train_Rescaled_Places365 --data path/to/Rescaled_Places365 
+```
 
 ---
 
