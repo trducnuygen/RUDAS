@@ -14,8 +14,8 @@
 
 ## Rescaling Explanations
 
-* **Rescaled subsets of ImageNet** — subsets IN$^{r}$ at retention ratios $r \in \{0.1, 0.2, 0.3, 0.4, 0.5\}$ stored under `Rescaled_ImageNet/`
-* **Rescaled subsets of Places365** — subsets PL$^{r}$ at retention ratios $r \in \{0.1, 0.2, 0.3, 0.4, 0.5\}$ stored under `Rescaled_Places365/`
+* **Rescaled subsets of ImageNet** — subsets $IN^{r}$ at retention ratios $r \in \{0.1, 0.2, 0.3, 0.4, 0.5\}$ stored under `Rescaled_ImageNet/`
+* **Rescaled subsets of Places365** — subsets $PL^{r}$ at retention ratios $r \in \{0.1, 0.2, 0.3, 0.4, 0.5\}$ stored under `Rescaled_Places365/`
 
 **Phase 1 — Compute age scores (warm-up training + scoring pass):**
 
@@ -23,9 +23,8 @@
 $ python age_script.py --data /path/to/ImageNet --epochs 100 --output_dir age_scores
 ```
 
-Age scores (`age_scores_NNN.npy`) are saved incrementally after each epoch to `age_scores/age_scoring/`. The run can be safely interrupted and resumed via `--resume`.
+Age scores (`age_scores_NNN.npy`) are saved incrementally after each epoch to `age_scores/age_scoring/`. The run can be safely interrupted and resumed via `--resume`. Age scores of ImageNet and Places365 that we have measured can be accessed via this [link](https://drive.google.com/drive/folders/1SB_8EWoMEvM6JjcCPpS6lRnMNpRy18ZO?usp=sharing).
 
-Age scores of ImageNet and Places365 that we have measured can be accessed via this [link](https://drive.google.com/drive/folders/1SB_8EWoMEvM6JjcCPpS6lRnMNpRy18ZO?usp=sharing).
 
 **Phase 2 — Prune datasets from the age table:**
 From the `age_scores_NNN.npy`, run `age_table.py` to produce the csv file with indices as the relative path to each sample of the original dataset. This csv file is then used for running the pruning script. For example, to prune ImageNet with preservation rate `r=0.1`, each easy / hard collection accounts for `b=1`, we run the following:
@@ -35,6 +34,7 @@ $ python pruning_age.py -d path/to/ImageNet --age path/to/age_table.csv -re 0.1 
 ```
 
 Modify the script accordingly for Places365 or any other datasets.
+
 
 
 **Phase 3 — Train and evaluate classifiers on rescaled subsets of ImageNet and Places365:**
