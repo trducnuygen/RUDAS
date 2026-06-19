@@ -27,6 +27,7 @@ Age scores (`age_scores_NNN.npy`) are saved incrementally after each epoch to `a
 
 
 **Phase 2 — Prune datasets from the age table:**
+
 From the `age_scores_NNN.npy`, run `age_table.py` to produce the csv file with indices as the relative path to each sample of the original dataset. This csv file is then used for running the pruning script. For example, to prune ImageNet with preservation rate `r=0.1`, each easy / hard collection accounts for `b=1`, we run the following:
 
 ```
