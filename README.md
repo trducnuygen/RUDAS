@@ -8,7 +8,9 @@
 * Experimental results for image classification validate the representativeness of the rescaled subsets across multiple lightweight architectures.
 * Strong performance on a rescaled subset is indicative of strong performance on the full dataset, allowing researchers to save time and computational cost during early network development.
 
-**Note**: The work is currently submitted to ACML 2026 for peer-review, as of 20/06/2026. 
+**Note**: 
+* Each rescaled dataset is stored as a text file of extracted relative paths with respect to the directory of the original dataset, and not the images themselves.
+* The work is currently submitted to ACML 2026 for peer-review, as of 20/06/2026. 
 
 ---
 
@@ -23,7 +25,7 @@
 $ python age_script.py --data /path/to/ImageNet --epochs 100 --output_dir age_scores
 ```
 
-Age scores (`age_scores_NNN.npy`) are saved incrementally after each epoch to `age_scores/age_scoring/`. The run can be safely interrupted and resumed via `--resume`. Age scores of ImageNet and Places365 that we have measured can be accessed via this [link](https://drive.google.com/drive/folders/1SB_8EWoMEvM6JjcCPpS6lRnMNpRy18ZO?usp=sharing).
+Age scores (`age_scores_NNN.npy`) are saved incrementally after each epoch to `age_scores/age_scoring/`. The run can be safely interrupted and resumed via `--resume`. Age score of every sample in ImageNet and Places365 that we have measured can be accessed via this [link](https://drive.google.com/drive/folders/1SB_8EWoMEvM6JjcCPpS6lRnMNpRy18ZO?usp=sharing).
 
 
 **Phase 2 — Prune datasets from the age table:**
@@ -91,6 +93,37 @@ MobileNetV1 on rescaled subsets $\overline{\mathcal{D}^r}$ of ImageNet and Place
 If you use any materials from this repository, please cite the following relevant works.
 
 ```bibtex
+@unpublished{amclNguyen26,
+  author = {Nguyen, Trung Duc and Nguyen, Thanh Tuan and Borgi, Mohamed Anouar and Nguyen, Thanh Phuong},
+  title  = {Rescaling Huge Datasets based on Age Score},
+  note   = {Manuscript submitted for publication to \textit{Machine Learning} (ACML Journal Track)},
+  year   = {2026},
+}
+```
+
+```bibtex
+@inproceedings{cvprDengDSLL009,
+  author       = {Jia Deng and Wei Dong and Richard Socher and Li{-}Jia Li and Kai Li and Li Fei{-}Fei},
+  title        = {ImageNet: {A} large-scale hierarchical image database},
+  booktitle    = {CVPR},
+  pages        = {248--255},  
+  year         = {2009}
+}
+```
+
+```bibtex
+@article{pamiZhouLKO018,
+  author    = {Bolei Zhou and {\`{A}}gata Lapedriza and Aditya Khosla and Aude Oliva and Antonio Torralba},
+  title     = {Places: {A} 10 Million Image Database for Scene Recognition},
+  journal   = {{IEEE} Trans. Pattern Anal. Mach. Intell.},
+  volume    = {40},
+  number    = {6},
+  pages     = {1452--1464},
+  year      = {2018}
+}
+```
+
+```bibtex
 @article{prlNguyen23,
   author  = {Thanh Tuan Nguyen and Thanh Phuong Nguyen},
   title   = {Rescaling Large Datasets Based on Validation Outcomes of a Pre-trained Network},
@@ -102,11 +135,3 @@ If you use any materials from this repository, please cite the following relevan
 }
 ```
 
-```bibtex
-@unpublished{amclNguyen26,
-  author = {Nguyen, Trung Duc and Nguyen, Thanh Tuan and Borgi, Mohamed Anouar and Nguyen, Thanh Phuong},
-  title  = {Rescaling Huge Datasets based on Age Score},
-  note   = {Manuscript submitted for publication to \textit{Machine Learning} (ACML Journal Track)},
-  year   = {2026},
-}
-```
