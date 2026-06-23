@@ -5,7 +5,6 @@ from src.data import get_dataloader
 from src.feat_pruner import AgePruner
 import numpy as np
 import random
-import numpy as np
 import pandas as pd
 
 def get_path_from_concat(full_set, idx):
@@ -19,7 +18,6 @@ def get_path_from_concat(full_set, idx):
 parser = argparse.ArgumentParser(description="ImageNet pruning")
 
 parser.add_argument("-d", "--data_path", type=str, required=True, help='Path to the dataset')
-# parser.add_argument("--batch_size", type=int, default=32, help='Batch size for feature extraction')
 parser.add_argument("-re", "--rate_easy", type=float, default=0.1, help='compression rate for easy samples')
 parser.add_argument("-rm", "--rate_moderate", type=float, default=0.1, help='compression rate for moderate samples')
 parser.add_argument("-rh", "--rate_hard", type=float, default=0.1, help='compression rate for hard samples')
@@ -43,10 +41,7 @@ def main(args):
     output_file = os.path.join(output_dir, "selected_paths.txt")
     os.makedirs(output_dir, exist_ok=True)
 
-    # if os.path.exists(output_file):
-    #     print(f"[INFO] Found existing {output_file}, skipping pruning.")
-    #     return
-    args.batch_size = 32 # not used in this script, but needed for get_dataloader
+    args.batch_size = 32 
 
     train_dir = f"{args.data_path}/train"
     _, train_dataset = get_dataloader(train_dir, args.batch_size, return_dataset=True)
