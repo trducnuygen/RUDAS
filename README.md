@@ -10,7 +10,7 @@
 
 **Note**: 
 * Each rescaled dataset is stored as a text file of extracted relative paths with respect to the directory of the original dataset, and not the images themselves.
-* The work is currently submitted to ACML 2026 for peer-review, as of 20/06/2026. 
+* The work is currently submitted to Multimedia Systems, as of 23/07/2026.
 
 ---
 
