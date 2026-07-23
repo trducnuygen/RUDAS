@@ -93,10 +93,10 @@ MobileNetV1 on rescaled subsets $\overline{\mathcal{D}^r}$ of ImageNet and Place
 If you use any materials from this repository, please cite the following relevant works.
 
 ```bibtex
-@unpublished{amclNguyen26,
+@unpublished{mmsysNguyen26,
   author = {Nguyen, Trung Duc and Nguyen, Thanh Tuan and Borgi, Mohamed Anouar and Nguyen, Thanh Phuong},
   title  = {Rescaling Huge Datasets based on Age Score},
-  note   = {Manuscript submitted for publication to \textit{Machine Learning} (ACML Journal Track)},
+  note   = {Manuscript submitted for publication to Multimedia Systems},
   year   = {2026},
 }
 ```
