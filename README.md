@@ -10,7 +10,7 @@
 
 **Note**: 
 * Each rescaled dataset is stored as a text file of extracted relative paths with respect to the directory of the original dataset, and not the images themselves.
-* The work is currently submitted to Pattern Analysis and Application, as of 21/08/2026.
+* The work is currently submitted to Pattern Analysis and Applications, as of 23/08/2026.
 
 ---
 
@@ -96,7 +96,7 @@ If you use any materials from this repository, please cite the following relevan
 @unpublished{mmsysNguyen26,
   author = {Nguyen, Trung Duc and Nguyen, Thanh Tuan and Borgi, Mohamed Anouar and Nguyen, Thanh Phuong},
   title  = {Rescaling Huge Datasets based on Age Score},
-  note   = {Manuscript submitted for publication to Pattern Analysis and Application},
+  note   = {Manuscript submitted for publication to Pattern Analysis and Applications},
   year   = {2026},
 }
 ```
