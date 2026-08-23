@@ -45,13 +45,13 @@ Modify the script accordingly for Places365 or any other datasets.
 * For training CNN-backbones on rescaled sub-datasets of ImageNet
 
 ```
-$ python train_Rescaled_ImageNet --data path/to/Rescaled_ImageNet 
+$ python train_Rescaled_ImageNet.py --data path/to/Rescaled_ImageNet 
 ```
 
 * For training CNN-backbones on rescaled sub-datasets of Places365
 
 ```
-$ python train_Rescaled_Places365 --data path/to/Rescaled_Places365 
+$ python train_Rescaled_Places365.py --data path/to/Rescaled_Places365 
 ```
 
 ---
