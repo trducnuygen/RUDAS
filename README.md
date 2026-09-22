@@ -10,7 +10,7 @@
 
 **Note**: 
 * Each rescaled dataset is stored as a text file of extracted relative paths with respect to the directory of the original dataset, and not the images themselves.
-* The work is currently submitted to Pattern Analysis and Applications, as of 23/08/2026.
+* The work is currently submitted to `...`
 
 ---
 
@@ -63,7 +63,7 @@ Top-1 accuracy (%) across backbones on the $r=0.1$ rescaled subsets vs. full dat
 | Network | IN$^{r=0.1}$ | ImageNet | PL$^{r=0.1}$ | Places365 |
 |:---|---:|---:|---:|---:|
 | GoogLeNet | 35.77 | 68.30 | 40.02 | 53.63 |
-| ShuffleNetV1 | 42.27 | 67.80 | 47.15 | — |
+| ShuffleNetV1 | 42.27 | 67.80 | 47.15 | 51.36 |
 | ShuffleNetV2 | 43.97 | 69.36 | 44.00 | 50.80 |
 | MobileNetV1 | 46.65 | 70.60 | 44.90 | 53.50 |
 | MobileNetV3 | 46.71 | 71.50 | 44.95 | 53.53 |
@@ -93,10 +93,10 @@ MobileNetV1 on rescaled subsets $\overline{\mathcal{D}^r}$ of ImageNet and Place
 If you use any materials from this repository, please cite the following relevant works.
 
 ```bibtex
-@unpublished{paaNguyen26,
+@unpublished{...Nguyen26,
   author = {Nguyen, Trung Duc and Nguyen, Thanh Tuan and Borgi, Mohamed Anouar and Nguyen, Thanh Phuong},
   title  = {Rescaling Huge Datasets based on Age Score},
-  note   = {Manuscript submitted for publication to Pattern Analysis and Applications},
+  note   = {Manuscript submitted for publication to ...},
   year   = {2026},
 }
 ```
